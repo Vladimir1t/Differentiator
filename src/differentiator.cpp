@@ -1,20 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-union element
-{
-    unsigned char operation;
-    double        value;
-};
-
-struct Node
-{
-    int           type;
-    union element elem;
-    struct Node*  left;
-    struct Node*  right;
-}
+#include "..\inlude\differentiator.h"
 
 int node_insert ()
 {
