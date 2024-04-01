@@ -38,7 +38,14 @@
     if (ptr == NULL)                 \
         return OPEN_ERROR;
 
+#define NEXT_NODE(next)        \
+    do                               \
+    {                                \
+        CALLOC(next, Node, 1);       \
+    }                                \
+    while(0)
 
+/*
 #define MATH_COM(command, operand)   \
     GetDigits (proc, &num2, &num1);  \
     num3 = num1 operand num2;        \
@@ -93,7 +100,7 @@
 #define HLT_COM()        \
     fclose (resultF);    \
     CpuDtor (proc);      \
-    return SUCCESS;
+    return SUCCESS;                   */
 
 
 #endif // DSL_H_INCLUDED

@@ -3,9 +3,10 @@
 
 enum RESULT
 {
-    ERROR   1,
-    SUCCESS 2,
-    CALLOC_ERROR 3,
+    ERROR        = 1,
+    SUCCESS      = 2,
+    CALLOC_ERROR = 3,
+    OPEN_ERROR   = 4,
 
 };
 

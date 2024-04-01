@@ -1,19 +1,19 @@
-#include "..\inlude\differentiator.h"
+#include "..\include\differentiator.h"
 
-int main (int argc, char argv[])
+int main (int argc, char* argv[])
 {
-    if (argc >= 2)
-        FOPEN (file_sourse, "mathTree.txt", "rb");
+    FOPEN (file_sourse, "file_output.txt", "a");
 
-    //struct token node = {0};
-    //bulid_tree (&node, file_sourse);
-    struct token n1 = {T_NM, {3}, NULL, NULL};
-    struct token n2 = {T_NM, {5}, NULL, NULL};
-    struct token n3 = {T_OP, {0}, &n1, &n2};
+    struct Node* root = NULL;
 
-    tree_output (node);
+    if (argc >= 2 && get_database (&root, argv[1]) != SUCCESS)
+        return 0;
 
-    build_graphviz (node);
+    //run_differentiator (root);
 
-    return 0
+    //tree_output (root, file_sourse);
+
+    build_graphviz (root);
+
+    return 0;
 }

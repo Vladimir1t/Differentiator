@@ -1,0 +1,19 @@
+digraph DIFFERENTIATOR{
+label = < DIFFERENTIATOR >;
+bgcolor = "#BAF0EC";
+node [shape = record ];
+edge [style = filled ];
+ 0 [shape = Mrecord, style = filled, fillcolor = Peru, label = "^" ];
+ 1 [shape = Mrecord, style = filled, fillcolor = Peru, label = "+" ];
+ 2 [shape = Mrecord, style = filled, fillcolor = Peru, label = "*" ];
+ 3 [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = "2.000000" ];
+ 4 [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = "x" ];
+ 5 [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = "3.000000" ];
+ 6 [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = "x" ];
+0 -> 1[ color = Peru ];
+1 -> 2[ color = Peru ];
+2 -> 3[ color = Peru ];
+2 -> 4[ color = Peru ];
+1 -> 5[ color = Peru ];
+0 -> 6[ color = Peru ];
+}
