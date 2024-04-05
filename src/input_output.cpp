@@ -2,6 +2,8 @@
 
 static FILE* file_error = fopen ("log\\input_output.txt", "w");
 
+static void skip_symbols (int* ptr, char* buffer);
+
 static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* node_num);
 
 static int add_node_in_graph_2 (struct Node* node, FILE* file_graph);
@@ -9,7 +11,6 @@ static int add_node_in_graph_2 (struct Node* node, FILE* file_graph);
 int get_database (struct Node** root, char* file_input)   // get data of tree in the following file
 {
     CALLOC (*root, struct Node, 1);
-    //CALLOC ((*root)->data, char, DATA_SIZE);
 
     FOPEN (file_p, file_input, "rb");
     size_t file_size = file_size_measure (file_p);            // measures the size of a text
@@ -44,11 +45,7 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
     {
         if (text_data[ptr] == '(' && position == ROOT)  // add a root of the tree
         {
-            // while (text_data[i] != '"')               // search for a beginning of a new word
-            //      i++;
             ptr++;
-            //NEXT_NODE (prev_node, node);
-            //prev_node = root;
             get_element (text_data, &ptr, root);
 
             stack_push (&stk, (void**) &root);
@@ -59,10 +56,8 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
         {
             printf ("{%d}\n", position);
             ptr++;
-            //struct Node* node = NULL;
-            //CALLOC (node, struct Node, 1);
+            CALLOC (node, struct Node, 1);
 
-            NEXT_NODE (node);
             get_element (text_data, &ptr, node);
 
             stack_pop (&stk, (void**) &prev_node);
@@ -71,13 +66,8 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
                 prev_node->left = node;
             else                                      // add node as a right leaf
                 prev_node->right = node;
+            //ptr++;
 
-            //while (text_data[i] != '(' && text_data[i] != ')')
-            //{
-            //    i++;
-            //}
-            ptr++;
-            printf ("..%c..\n", text_data[ptr]);
             if (text_data[ptr] == '(')                  // next node will be in a left position
             {
                 stack_push (&stk, (void**) &node);
@@ -85,7 +75,6 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
                 position = LEFT;
             }
             ptr--;
-             //
         }
         else if (text_data[ptr] == ')')                 // if a next node will be, it will stay in a right position
         {
@@ -98,18 +87,29 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
     return SUCCESS;
 }
 
+void skip_symbols (int* ptr, char* buffer)
+{
+    while (buffer[*ptr] != '#')               // search for a beginning of a new word
+        *ptr++;
+}
+
 int get_element (char* text_data, int* ptr, struct Node* tree)
 {
-    char* buffer = (char*) calloc (DATA_SIZE, sizeof (char));
+    if (text_data == NULL || tree == NULL)
+        return ERROR;
+
+    char* buffer = (char*) calloc (DATA_SIZE + 1, sizeof (char));
     int i = 0;
+
     while (text_data[*ptr] != ')' && text_data[*ptr] != '(')
     {
         buffer[i] = text_data[*ptr];
+        printf ("[%c]\n", buffer[i]);
         i++;
-        *ptr++;
+        *ptr += 1;        //
     }
 
-    if (check_var (buffer) != 0)
+    if (check_var (buffer) != 0)                             // if element is variable
     {
         tree->type = T_VAR;
         tree->data.var = buffer[0];
@@ -120,7 +120,7 @@ int get_element (char* text_data, int* ptr, struct Node* tree)
     else
     {
         int x = sscanf (buffer, "%lf", &(tree->data.value));
-        if (x == 1)
+        if (x == 1)                                          // if element is number
         {
             tree->type = T_NUM;
             free (buffer);
@@ -128,7 +128,7 @@ int get_element (char* text_data, int* ptr, struct Node* tree)
             return SUCCESS;
         }
     }
-    if (strlen (buffer) == 1)
+    if (strlen (buffer) == 1)                                //  if element is operand
     {
         tree->data.operand = buffer[0];
         tree->type = T_OP;
@@ -136,22 +136,33 @@ int get_element (char* text_data, int* ptr, struct Node* tree)
         free (buffer);
         return SUCCESS;
     }
-    else
+    else                                                     // if element is long operand (sin, ln etc)
     {
+        if (!strcmp (data_buffer, "null"))
+        {
+            tree->type = DEFUALT;
+        }
+        else
+        {
+            tree->type = T_OP_LONG;
+
+            tree->data.operand_long = (char*) calloc (strlen (data_buffer) + 1, sizeof (char));
+            strcpy (tree->data.operand_long, data_buffer);
+        }
         free (buffer);
-        return ERROR;
+        return SUCCESS;
     }
 }
 
 int check_var (char* buffer)
 {
+    if (buffer == NULL)
+        return ERROR;
+
     for (int i = 0; i < VAR_NUM; i++)
     {
-        printf ("[%c]\n", buffer[0]);
         if (buffer[0] == array_vr[i].name)
-        {
             return 1;
-        }
     }
     return 0;
 }
@@ -170,13 +181,13 @@ size_t file_size_measure (FILE* const file_p)
 }
 
 
-int build_graphviz (struct Node* root)
+int build_graphviz (struct Node* root, const char* file_name)
 {
     size_t node_num = 0;
     if (root == NULL)
         return ERROR;
 
-    FOPEN (file_graph, "graphviz\\graph.dot", "w");
+    FOPEN (file_graph, file_name, "w");
 
     fprintf (file_graph, "digraph DIFFERENTIATOR{\n"
                          "label = < DIFFERENTIATOR >;\n"
@@ -196,12 +207,6 @@ int build_graphviz (struct Node* root)
 
 static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* node_num)
 {
-
-    //char* buffer = (char*) calloc (strlen (node->data) + 3, sizeof (char));
-    //buffer[0] = '"';
-    //strcat (buffer, node->data);
-    //buffer[strlen (node->data) + 1] = '"';
-
     if (node->right == NULL && node->left == NULL)
     {
         if (node->type == T_VAR)
@@ -210,7 +215,6 @@ static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* nod
             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%c\" ];\n", *node_num, node->data.operand);
         else
              fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%lf\" ];\n", *node_num, node->data.value);
-        //printf ("[%d]\n", node->num_in_tree);
     }
     else
     {
@@ -220,9 +224,9 @@ static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* nod
             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%c\" ];\n", *node_num, node->data.operand);
         else
              fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%lf\" ];\n", *node_num, node->data.value);
-        //printf ("[%d]\n", node->num_in_tree);
     }
-     node->num_in_tree = *node_num;
+
+    node->num_in_tree = *node_num;
     if (node->left != NULL)
     {
         *node_num += 1;
@@ -257,7 +261,7 @@ static int add_node_in_graph_2 (struct Node* node, FILE* file_graph)
 
 int tree_output (struct Node* node, FILE* file_output)
 {
-    dump_ (node);
+    dump_node (node);
     if (node->type == T_VAR)
         fprintf (file_output, "(%c", node->data.var);
     else if (node->type == T_OP)
@@ -276,7 +280,7 @@ int tree_output (struct Node* node, FILE* file_output)
     return 0;
 }
 
-void dump_ (struct Node *tree)
+void dump_node (struct Node *tree)
 {
     printf("\n---------------NODE_DUMP-------------\n");
     printf("type - %d\n", tree->type);

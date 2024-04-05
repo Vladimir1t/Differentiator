@@ -3,9 +3,11 @@
 
 enum class_type
 {
-    T_NUM  = 0,
-    T_VAR  = 1,
-    T_OP   = 2,
+    T_NUM     =  0,
+    T_VAR     =  1,
+    T_OP      =  2,
+    T_OP_LONG =  3,
+    DEFUALT   = -1,
 };
 
 enum CLASS_OPERATION
@@ -54,5 +56,7 @@ static struct variable array_vr[] =
     {'y', 2},
     {'z', 3},
 };
+
+const int VAR_NUM = sizeof (array_vr) / sizeof (array_vr[0]);
 
 #endif // COMMANDS_H_INCLUDED
