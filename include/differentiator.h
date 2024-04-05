@@ -30,10 +30,10 @@ enum POSITION
 
 union node_data
 {
-    unsigned char operand;        // +, -, * etc
-    unsigned char var;            // x, y, z
-    double        value;          // double number
-    char*         operand_long;   // sin, cos, ln etc
+    unsigned char operation;       // +, -, * etc
+    unsigned char var;             // x, y, z
+    double        value;           // double number
+    char*         operation_long;  // sin, cos, ln etc
 };
 
 struct Node
@@ -49,7 +49,7 @@ struct Node
 static const Node* POISON = NULL;
 
 
-int get_database (struct Node** node, char* file_input);
+int get_database (struct Node** root, char* file_input);
 
 int construct_data_nodes (struct Node* root, char* text_data, size_t file_size);
 
@@ -67,9 +67,14 @@ void dump_node (struct Node *tree);
 
 void tree_dtor (struct Node* node);
 
+void clean_buffer ();
+
 int run_differentiator (struct Node* root, FILE* file_output);
 
 struct Node* diff (const struct Node* node);
 
+double calculator (struct Node* tree, int* var);
+
+void simplifier (struct Node* tree);
 
 #endif // DIFFERENTIATOR_H_INCLUDED

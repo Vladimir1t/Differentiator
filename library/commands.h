@@ -20,7 +20,11 @@ enum CLASS_OPERATION
     OP_COS = 6,
     OP_TG  = 7,
     OP_CTG = 8,
-    OP_DEG = 9,
+    OP_LN  = 9,
+    OP_SH  = 10,
+    OP_CH  = 11,
+    OP_DEG = 12,
+    OP_EXP = 13
 };
 
 struct operation
@@ -39,7 +43,11 @@ static struct operation array_op[] =
     {"cos", OP_COS},
     {"tg",  OP_TG},
     {"ctg", OP_CTG},
-    {"^",   OP_DEG}
+    {"ln",  OP_LN},
+    {"sh",  OP_SH},
+    {"ch",  OP_CH},
+    {"^",   OP_DEG},
+    {"exp", OP_EXP}
 };
 
 const int OP_NUM = sizeof (array_op) / sizeof (array_op[0]);
