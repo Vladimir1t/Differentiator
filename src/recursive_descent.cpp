@@ -12,18 +12,25 @@ int syntax_error ();
 
 int main ()
 {
-    char String[] = "(2+(2*5))*3$";
-
+    printf ("\n Infix Calculator \n\n");
+    const char String[] = "(2+(2*5))*3$";
+    int i = 0;
+    while (String[i] != '$')
+    {
+        printf ("%c", String[i]);
+        i++;
+    }
+    //printf ("%s\n", String);
     int value = get_G (String);
 
-    printf ("value = %d\n", value);
+    printf (" = %d\n\n", value);
 
     return 0;
 }
 
 int get_G (const char* String)
 {
-    printf ("G\n");
+    //printf ("G\n");
     str = String;
     int val = get_E ();
 
@@ -37,7 +44,7 @@ int get_G (const char* String)
 
 int get_E ()
 {
-    printf ("E\n");
+    //printf ("E\n");
     int val = get_T ();
     while (*str == '+' || *str == '-')
     {
@@ -54,7 +61,7 @@ int get_E ()
 
 int get_T ()
 {
-    printf ("T\n");
+    //printf ("T\n");
     int val = get_P ();
     while (*str == '*' || *str == '/')
     {
@@ -71,7 +78,7 @@ int get_T ()
 
 int get_P ()
 {
-    printf ("P\n");
+    //printf ("P\n");
     int val = 0;
     if (*str == '(')
     {
@@ -91,7 +98,7 @@ int get_P ()
 
 int get_N ()
 {
-    printf ("N\n");
+    //printf ("N\n");
     int val = 0;
     const char* old_str = str;
     while ('0'<= *str && *str <= '9')
