@@ -8,7 +8,8 @@ static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* nod
 
 static int add_node_in_graph_2 (struct Node* node, FILE* file_graph);
 
-int get_database (struct Node** root, char* file_input)   // get data of tree in the following file
+
+int get_database (struct Node** root, char* file_input)       // get data of tree in the following file
 {
     CALLOC (*root, struct Node, 1);
 
@@ -43,7 +44,7 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
     int ptr = 0;
     for (int n = 0, position = ROOT; ptr < file_size; ptr++)
     {
-        if (text_data[ptr] == '(' && position == ROOT)  // add a root of the tree
+        if (text_data[ptr] == '(' && position == ROOT)      // add a root of the tree
         {
             ptr++;
             get_element (text_data, &ptr, root);
@@ -52,7 +53,7 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
             stack_push (&stk, (void**) &root);
             position = LEFT;
         }
-        if (text_data[ptr] == '(')                      // add node in tree
+        if (text_data[ptr] == '(')                          // add node in tree
         {
             ptr++;
             CALLOC (node, struct Node, 1);
@@ -61,12 +62,12 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
 
             stack_pop (&stk, (void**) &prev_node);
 
-            if (position == LEFT)                     // add node as a left leaf
+            if (position == LEFT)                           // add node as a left leaf
                 prev_node->left = node;
-            else                                      // add node as a right leaf
+            else                                            // add node as a right leaf
                 prev_node->right = node;
 
-            if (text_data[ptr] == '(')                  // next node will be in a left position
+            if (text_data[ptr] == '(')                      // next node will be in a left position
             {
                 stack_push (&stk, (void**) &node);
                 stack_push (&stk, (void**) &node);
@@ -74,7 +75,7 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
             }
             ptr--;
         }
-        else if (text_data[ptr] == ')')                 // if a next node will be, it will stay in a right position
+        else if (text_data[ptr] == ')')                     // if a next node will be, it will stay in a right position
         {
             position = RIGHT;
         }
@@ -137,6 +138,7 @@ int get_element (char* text_data, int* ptr, struct Node* tree)
     {
         if (!strcmp (buffer, "null"))
         {
+            printf ("<< null >>\n");
             tree->type = DEFUALT;
         }
         else
@@ -145,6 +147,7 @@ int get_element (char* text_data, int* ptr, struct Node* tree)
 
             tree->data.operation_long = (char*) calloc (strlen (buffer) + 1, sizeof (char));
             strcpy (tree->data.operation_long, buffer);
+            printf ("<< %s >>\n", tree->data.operation_long);
         }
         free (buffer);
         return SUCCESS;
@@ -208,19 +211,17 @@ static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* nod
     {
         if (node->type == T_VAR)
             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%c\" ];\n", *node_num, node->data.var);
-        else if (node->type == T_OP)
-            fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%c\" ];\n", *node_num, node->data.operation);
-        else
-             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%lf\" ];\n", *node_num, node->data.value);
+
+        else if (node->type == T_NUM)
+            fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = YellowGreen, label = \"%lf\" ];\n", *node_num, node->data.value);
     }
     else
     {
-        if (node->type == T_VAR)
-            fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%c\" ];\n", *node_num, node->data.var);
-        else if (node->type == T_OP)
+        if (node->type == T_OP)
             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%c\" ];\n", *node_num, node->data.operation);
-        else
-             fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%lf\" ];\n", *node_num, node->data.value);
+
+        else if (node->type == T_OP_LONG)
+            fprintf (file_graph, " %d [shape = Mrecord, style = filled, fillcolor = Peru, label = \"%s\" ];\n", *node_num, node->data.operation_long);
     }
 
     node->num_in_tree = *node_num;
@@ -247,7 +248,7 @@ static int add_node_in_graph_2 (struct Node* node, FILE* file_graph)
         add_node_in_graph_2 (node->left, file_graph);
     }
 
-    if (node->right != NULL)
+    if (node->right != NULL && node->right->type != DEFUALT)
     {
         fprintf (file_graph, "%d -> %d[ color = Peru ];\n", node->num_in_tree, (node->right)->num_in_tree);
         add_node_in_graph_2 (node->right, file_graph);

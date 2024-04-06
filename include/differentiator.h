@@ -13,6 +13,7 @@
 
 const int DATA_SIZE = 20;
 
+const int MAX_OP_SIZE = 4;
 /*
 enum CLASS_VARIABLE
 {
@@ -71,7 +72,7 @@ void clean_buffer ();
 
 int run_differentiator (struct Node* root, FILE* file_output);
 
-struct Node* diff (const struct Node* node);
+struct Node* diff (const struct Node* node, char var);
 
 double calculator (struct Node* tree, int* var);
 

@@ -31,7 +31,7 @@ int run_differentiator (struct Node* root, FILE* file_output)
 
     simplifier (root);
 
-    struct Node* diff_tree = diff (root);
+    struct Node* diff_tree = diff (root, 'x');
 
     simplifier (diff_tree);
 
@@ -139,7 +139,7 @@ CLASS_OPERATION long_op_det (char* operation)
         return OP_TG;
 }
 
-struct Node* diff (const struct Node* node)
+struct Node* diff (const struct Node* node, char var)
 {
     switch (node->type)
     {
@@ -152,56 +152,28 @@ struct Node* diff (const struct Node* node)
 
         case T_VAR:
         {
-            double temp = 1;
-            return create_node (T_NUM, &temp, NULL, NULL);
+            if (node->type == var)
+            {
+                double temp = 1;
+                return create_node (T_NUM, &temp, NULL, NULL);
+            }
         }
 
         case T_OP:
             switch (node->data.operation)
             {
                 case '+':
-                {
-                    unsigned char add = '+';
-                    return create_node (T_OP, &add, diff (node->left), diff (node->right));
-                    break;
-                }
+                ADD_DIFF (node);
 
                 case '-':
-                {
-                    unsigned char sub = '-';
-                    return create_node (T_OP, &sub, diff (node->left), diff (node->right));
-                    break;
-                }
+                SUB_DIFF (node);
 
                 case '*':
-                {
-                    unsigned char mul = '*', add = '+';
+                MUL_DIFF (node);
 
-                    struct Node* du = diff (node->left);
-                    struct Node* u  = copy_subtree (node->left);
-
-                    struct Node* dv = diff (node->right);
-                    struct Node* v  = copy_subtree (node->right);
-
-                    return create_node (T_OP, &add, create_node (T_OP, &mul, du, v), create_node (T_OP, &mul, u, dv));
-                    break;
-                }
                 case '/':
-                {
-                    unsigned char mul = '*', sub = '-', div = '/';
+                DIV_DIFF (node);
 
-                    struct Node* du = diff (node->left);
-                    struct Node* u  = copy_subtree (node->left);
-
-                    struct Node* dv = diff (node->right);
-                    struct Node* v  = copy_subtree (node->right);
-
-                    struct Node* nominator = create_node (T_OP, &sub, create_node (T_OP, &mul, du, v), create_node (T_OP, &mul, u, dv));
-                    struct Node* denominator = create_node (T_OP, &mul, copy_subtree (u), copy_subtree (u));
-
-                    return create_node (T_OP, &div, nominator, denominator);
-                    break;
-                }
                /* case '^':
                 {
                     unsigned char mul = '*', sub = '-', deg = '^';
@@ -215,7 +187,8 @@ struct Node* diff (const struct Node* node)
                     }
 
 
-                    struct Node*  }        */
+                    struct Node*
+                }  */
 
             }
     }
@@ -239,6 +212,11 @@ struct Node* create_node (class_type type, void* data, struct Node* left, struct
 
         case T_VAR:
             new_node->data.var = *(unsigned char*) data;
+            break;
+
+        case T_OP_LONG:
+            new_node->data.operation_long = (char*) calloc (MAX_OP_SIZE, sizeof (char));
+            strcpy (new_node->data.operation_long, (char*) data);
             break;
     }
 
@@ -268,7 +246,7 @@ struct Node* copy_subtree (struct Node* node)
 void simplifier (struct Node* tree)
 {
     int changed = 1;
-    while (changed > 0) //
+    while (changed > 0)
     {
         changed = 0;
         simplifier_1 (tree, &changed);
@@ -285,6 +263,7 @@ void simplifier_1 (struct Node* tree, int* changed)
     {
         tree->data.value = temp;
         tree->type = T_NUM;
+
         SUBTREE_DTOR(tree->left);
         SUBTREE_DTOR(tree->right);
         *changed += 1;
@@ -299,7 +278,19 @@ void simplifier_1 (struct Node* tree, int* changed)
     }
 }
 
-void free_subtree (struct Node* tree)
+/*void simplifier_2 (struct Node* tree)
+{
+    if (tree->type == T_OP)
+    {
+        if (!strcmp (tree->data.operation, "*"))
+        {
+            if ()
+            else if ()
+        }
+    }
+}    */
+
+void free_subtree (struct   Node* tree)
 {
     if (tree->left != NULL)
         free_subtree (tree->left);
@@ -310,4 +301,5 @@ void free_subtree (struct Node* tree)
     tree->left = NULL;
     tree->right = NULL;
     free (tree);
+    tree = NULL;
 }

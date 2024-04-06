@@ -13,7 +13,7 @@ int main (int argc, char* argv[])
         return 0;
 
     const char file[] = "graphviz\\graph.dot";
-    simplifier (root);
+
     build_graphviz (root, file);
 
     char choice = '\0';
@@ -28,7 +28,6 @@ int main (int argc, char* argv[])
             system ("start graphviz\\tree_graph.png");
             break;
         }
-        //clean_buffer ();
     }
 
     //tree_output (root, file_sourse);
