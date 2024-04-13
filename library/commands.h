@@ -1,7 +1,7 @@
 #ifndef COMMANDS_H_INCLUDED
 #define COMMANDS_H_INCLUDED
 
-enum class_type
+enum Class_type
 {
     T_NUM     =  0,
     T_VAR     =  1,
@@ -10,7 +10,7 @@ enum class_type
     DEFUALT   = -1,
 };
 
-enum CLASS_OPERATION
+enum Class_operation
 {
     OP_ADD = 1,
     OP_SUB = 2,
