@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "..\library\errors.h"
 #include "..\library\DSL.h"
@@ -39,11 +40,11 @@ union node_data
 
 struct Node
 {
-    class_type   type;
+    Class_type   type;
     node_data    data;
     struct Node* left;
     struct Node* right;
-    struct Node* parent;
+    //struct Node* parent;
     int          num_in_tree;
 };
 
@@ -70,7 +71,9 @@ void tree_dtor (struct Node* node);
 
 void clean_buffer ();
 
-int run_differentiator (struct Node* root, FILE* file_output);
+int run_differentiator (struct Node* tree, FILE* file_output);
+
+struct Node* create_node (Class_type type, void* data, struct Node* left, struct Node* right);
 
 struct Node* diff (const struct Node* node, char var);
 
