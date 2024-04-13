@@ -1,43 +1,49 @@
 #include <stdio.h>
+#include <string.h>
 
-const char* str = NULL;
-const int SYNTAX_ERROR = 0xDEAD;
+const char* str          = NULL;
+const int   SYNTAX_ERROR = 0xDEAD;
 
-int get_G (const char* String);
+int get_G (const char* string);
 int get_E ();
 int get_T ();
 int get_P ();
 int get_N ();
 int syntax_error ();
 
+
 int main ()
 {
-    printf ("\n Infix Calculator \n\n");
-    const char String[] = "(2+(2*5))*3$";
-    int i = 0;
-    while (String[i] != '$')
-    {
-        printf ("%c", String[i]);
-        i++;
-    }
-    //printf ("%s\n", String);
-    int value = get_G (String);
+    printf ("\n-- Infix Calculator --\n\n");
+    char string[] = "(2+(2*5))*3/6$";
 
+    int i = 0;
+
+    int value = get_G (string);
+    if (value == SYNTAX_ERROR)
+        return 0;
+    char* end_ptr = strchr (string, '$');
+
+    string[end_ptr - string] = '\0';
+     printf ("%s", string);
     printf (" = %d\n\n", value);
 
     return 0;
 }
 
-int get_G (const char* String)
+int get_G (const char* string)
 {
     //printf ("G\n");
-    str = String;
+    str = string;
     int val = get_E ();
 
     if (*str == '$')
         str++;
     else
+    {
         syntax_error ();
+        return SYNTAX_ERROR;
+    }
 
     return val;
 }
@@ -56,6 +62,7 @@ int get_E ()
         else if (*op == '-')
             val -= val_2;
     }
+
     return val;
 }
 
@@ -73,6 +80,7 @@ int get_T ()
         else if (*op == '/')
             val /= val_2;
     }
+
     return val;
 }
 
@@ -87,6 +95,7 @@ int get_P ()
         if (*str == ')')
         {
             str++;
+
             return val;
         }
     }
@@ -117,7 +126,8 @@ int get_N ()
 
 int syntax_error ()
 {
-    printf ("syntax error\n");
-    getchar ();
+    printf ("Syntax Error\n");
+    //getchar ();
+
     return SYNTAX_ERROR;
 }
