@@ -1,13 +1,28 @@
 #include "..\include\differentiator.h"
 
-static FILE* file_error = fopen ("log\\input_output.txt", "w");
+static FILE* file_error = fopen ("log\\input_output_error.txt", "w");
+
+static struct Node* get_g (const char* text_data);
+
+static struct Node* get_e (char** ptr);
+
+static struct Node* get_t (char** ptr);
+
+static struct Node* get_d (char** ptr);
+
+static struct Node* get_p (char** ptr);
+
+static struct Node* get_f (char** ptr);
+
+static struct Node* get_n (char** ptr);
+
+static struct Node* syntax_error ();
 
 static void skip_symbols (int* ptr, char* buffer);
 
 static int add_node_in_graph_1 (struct Node* node, FILE* file_graph, size_t* node_num);
 
 static int add_node_in_graph_2 (struct Node* node, FILE* file_graph);
-
 
 int get_database (struct Node** root, char* file_input)       // get data of tree in the following file
 {
@@ -27,8 +42,13 @@ int get_database (struct Node** root, char* file_input)       // get data of tre
         return ERROR;
     }
     fclose (file_p);
+    text_data[file_size] = '$';
 
-    construct_data_nodes (*root, text_data, file_size);
+    *root = get_g (text_data);
+
+    if (root == NULL)
+        return ERROR;
+    //construct_data_nodes (*root, text_data, file_size);
 
     return SUCCESS;
 }
@@ -89,7 +109,7 @@ int construct_data_nodes (struct Node* root, char* text_data, size_t file_size)
 void skip_symbols (int* ptr, char* buffer)
 {
     while (buffer[*ptr] != '#')               // search for a beginning of a new word
-        *ptr++;
+        *ptr += 1;
 }
 
 int get_element (char* text_data, int* ptr, struct Node* tree)
@@ -280,17 +300,17 @@ int tree_output (struct Node* node, FILE* file_output)
 
 void dump_node (struct Node *tree)
 {
-    printf("\n---------------NODE_DUMP-------------\n");
-    printf("type - %d\n", tree->type);
+    printf ("\n---------------NODE-------------\n");
+    printf ("type - %d\n", tree->type);
 
     if (tree->type == T_NUM)
-        printf("#%lf#", tree->data.value);
+        printf ("# %lf #", tree->data.value);
     else if (tree->type == T_OP)
-        printf("#%c#", tree->data.operation);
+        printf ("# %c #", tree->data.operation);
     else if (tree->type == T_VAR)
-        printf("#%c#", tree->data.var);
+        printf ("# %c #", tree->data.var);
 
-    printf("\n---------------DUMP_END--------------\n");
+    printf ("\n--------------------------------\n");
 }
 
 void tree_dtor (struct Node* node)
@@ -313,5 +333,254 @@ void clean_buffer ()
     }
     while (symbol != '\n' && symbol != EOF);
 }
+//(*(*(+(x)(2))(+(x)(ln(1002)(null))))(*(x)(*(-(x)(12))(x)))
+struct Node* get_g (const char* text_data)
+{
+    printf ("G\n");
+    char* ptr = (char*) text_data;
+    struct Node* value = get_e (&ptr);
+
+    while (*ptr == '\n' || *ptr == '\r')
+        ptr += 1;
+
+    if (*ptr == '$')
+        ptr += 1;
+
+    else
+    {
+        syntax_error ();
+        return NULL;
+    }
+
+    return value;
+}
+
+struct Node* get_e (char** ptr)
+{
+    printf ("E\n");
+    struct Node* value_1 = get_t (ptr);
+    while (**ptr == '+' || **ptr == '-')
+    {
+        const char op = **ptr;
+        *ptr += 1;
+        struct Node* value_2 = get_t (ptr);
+
+        if (op == '+')
+        {
+            unsigned char add = '+';
+            value_1 = create_node (T_OP, &add, value_1, value_2);
+        }
+
+        else if (op == '-')
+        {
+            unsigned char sub = '-';
+            value_1 = create_node (T_OP, &sub, value_1, value_2);
+        }
+    }
+
+    return value_1;
+}
+
+struct Node* get_t (char** ptr)
+{
+    printf ("T\n");
+    struct Node* value_1 = get_p (ptr);
+    while (**ptr == '*' || **ptr == '/')
+    {
+        const char op = **ptr;
+        *ptr += 1;
+        struct Node* value_2 = get_p (ptr);
+
+        if (op == '*')
+        {
+            unsigned char mul = '*';
+            value_1 = create_node (T_OP, &mul, value_1, value_2);
+        }
+
+        else if (op == '/')
+        {
+            unsigned char div = '/';
+            value_1 = create_node (T_OP, &div, value_1, value_2);
+        }
+    }
+
+    return value_1;
+}
+
+struct Node* get_p (char** ptr)
+{
+    printf ("P\n");
+    struct Node* value = NULL;
+    if (**ptr == '(')
+    {
+        *ptr += 1;
+        value = get_e (ptr);
+
+        if (**ptr == ')')
+        {
+            *ptr += 1;
+            return value;
+        }
+    }
+    else if (**ptr == 'l' && *(*ptr + 1) == 'n')
+    {
+        *ptr += 2;
+        value = get_d (ptr);
+        return value;
+    }
+    else if (isalpha (**ptr) && isalpha (*(*ptr + 2))  && isalpha (*(*ptr + 2)))
+    {
+        value = get_f (ptr);
+        return value;
+    }
+    else
+        value = get_n (ptr);
+
+    return value;
+}
+
+struct Node* get_f (char** ptr)
+{
+    printf ("F\n");
+    struct Node* value_1 = NULL;
+
+    char op = **ptr;
+    *ptr += 3;
+
+    if (**ptr == '(')
+    {
+        *ptr += 1;
+        if (op =='c')
+        {
+            char* cos = "cos";
+            value_1 = get_e (ptr);
+            value_1 = create_node (T_OP_LONG, cos, value_1, NULL);
+        }
+        else if (op == 's')
+        {
+            char* sin = "sin";
+            value_1 = get_e (ptr);
+            value_1 = create_node (T_OP_LONG, sin, value_1, NULL);
+        }
+        else if (op == 'e')
+        {
+            char* exp = "exp";
+            value_1 = get_e (ptr);
+            value_1 = create_node (T_OP_LONG, exp, value_1, NULL);
+        }
+        else
+        {
+            syntax_error ();
+            return NULL;
+        }
+
+        if (**ptr == ')')
+        {
+            *ptr += 1;
+        }
+    }
+    return value_1;
+}
+
+struct Node* get_d (char** ptr)
+{
+    printf ("D\n");
+    struct Node* value_1 = NULL;
+
+    if (**ptr == '(')
+    {
+        *ptr += 1;
+        char* ln = "ln";
+        value_1 = get_e (ptr);
+        value_1 = create_node (T_OP_LONG, ln, value_1, NULL);
+        if (**ptr == ')')
+        {
+            *ptr += 1;
+        }
+    }
+    return value_1;
+}
+
+struct Node* get_n (char** ptr)
+{
+    printf ("N\n");
+    const char* old_ptr = *ptr;
+
+    struct Node* val = (struct Node*) calloc (1, sizeof (struct Node));
+
+    if (isalpha (**ptr))
+    {
+        val->type = T_VAR;
+        val->data.var = **ptr;
+        *ptr += 1;
+    }
+    else
+    {
+        val->type = T_NUM;
+
+        char sign = '+';
+        if (**ptr == '-')
+            sign = '-';
+
+        while ('0'<= **ptr && **ptr <= '9')
+        {
+            if (sign == '+')
+                val->data.value = val->data.value * 10 + (**ptr - '0');
+            else
+                val->data.value = val->data.value * 10 - (**ptr - '0');
+            *ptr += 1;
+        }
+    }
+
+    if (*ptr == old_ptr)
+    {
+        syntax_error ();
+        return NULL;
+    }
+
+    return val;
+}
+
+struct Node* syntax_error ()
+{
+    printf ("Syntax Error\n");
+
+    return NULL;
+}
+
+struct Node* create_node (Class_type type, void* data, struct Node* left, struct Node* right)
+{
+    struct Node* new_node = (struct Node*) calloc (1, sizeof (struct Node));
+
+    new_node->type = type;
+    switch (type)
+    {
+        case T_NUM:
+            new_node->data.value = *(double*) data;
+            break;
+
+        case T_OP:
+            new_node->data.operation = *(unsigned char*) data;
+            break;
+
+        case T_VAR:
+            new_node->data.var = *(unsigned char*) data;
+            break;
+
+        case T_OP_LONG:
+            new_node->data.operation_long = (char*) calloc (MAX_OP_SIZE, sizeof (char));
+            strcpy (new_node->data.operation_long, (char*) data);
+            break;
+
+        default:
+            return NULL;
+    }
+
+    new_node->left  = left;
+    new_node->right = right;
+
+    return new_node;
+}
+
 
 

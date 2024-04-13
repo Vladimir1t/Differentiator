@@ -3,7 +3,6 @@
 
   /* Library of defines */
 
-
 #define CHECK_PTR(ptr)                              \
     if (ptr == NULL)                                \
     {                                               \
