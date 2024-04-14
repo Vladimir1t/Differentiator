@@ -8,7 +8,7 @@
 #include <ctype.h>
 
 #include "..\library\errors.h"
-#include "..\library\DSL.h"
+#include "..\library\library_of_defines.h"
 #include "..\stack\include\stack.h"
 #include "..\library\commands.h"
 
