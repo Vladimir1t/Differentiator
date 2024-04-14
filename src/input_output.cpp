@@ -279,21 +279,21 @@ static int add_node_in_graph_2 (struct Node* node, FILE* file_graph)
 
 int tree_output (struct Node* node, FILE* file_output)
 {
-    dump_node (node);
-    if (node->type == T_VAR)
-        fprintf (file_output, "(%c", node->data.var);
-    else if (node->type == T_OP)
-        fprintf (file_output, "(%c", node->data.operation);
-    else if (node->type == T_NUM)
-        fprintf (file_output, "(%lf", node->data.value);
-
     if (node->left != NULL)
         tree_output (node->left, file_output);
 
-    if (node->right != NULL)
-        tree_output (node->right, file_output);
+    //dump_node (node);
+    if (node->type == T_VAR)
+        fprintf (file_output, "( %c ", node->data.var);
+    else if (node->type == T_OP)
+        fprintf (file_output, " %c ", node->data.operation);
+    else if (node->type == T_NUM)
+        fprintf (file_output, "( %lf ", node->data.value);
 
     fprintf (file_output, ")");
+
+    if (node->right != NULL)
+        tree_output (node->right, file_output);
 
     return 0;
 }
@@ -411,6 +411,7 @@ struct Node* get_p (char** ptr)
 {
     printf ("P\n");
     struct Node* value = NULL;
+
     if (**ptr == '(')
     {
         *ptr += 1;
@@ -419,20 +420,22 @@ struct Node* get_p (char** ptr)
         if (**ptr == ')')
         {
             *ptr += 1;
+            if (**ptr == '^')
+            {
+                *ptr += 1;
+                unsigned char pow = '^';
+                struct Node* value_2 = get_p (ptr);
+                value = create_node (T_OP, &pow, value, value_2);
+            }
             return value;
         }
     }
     else if (**ptr == 'l' && *(*ptr + 1) == 'n')
-    {
-        *ptr += 2;
         value = get_d (ptr);
-        return value;
-    }
+
     else if (isalpha (**ptr) && isalpha (*(*ptr + 2))  && isalpha (*(*ptr + 2)))
-    {
         value = get_f (ptr);
-        return value;
-    }
+
     else
         value = get_n (ptr);
 
@@ -443,7 +446,6 @@ struct Node* get_f (char** ptr)
 {
     printf ("F\n");
     struct Node* value_1 = NULL;
-
     char op = **ptr;
     *ptr += 3;
 
@@ -473,18 +475,36 @@ struct Node* get_f (char** ptr)
             syntax_error ();
             return NULL;
         }
+        if (**ptr == ')')
+            *ptr += 1;
+    }
+    return value_1;
+}
 
+/*struct Node* get_h (char** ptr)
+{
+    printf ("H\n");
+    struct Node* value_1 = NULL;
+    *ptr += 1;
+
+    if (**ptr == '(')
+    {
+        *ptr += 1;
+        //unsigned char = '^';
+        value_1 = get_e (ptr);
+        value_1 = create_node (T_OP, , value_1, NULL);
         if (**ptr == ')')
         {
             *ptr += 1;
         }
     }
     return value_1;
-}
+}*/
 
 struct Node* get_d (char** ptr)
 {
     printf ("D\n");
+    *ptr += 2;
     struct Node* value_1 = NULL;
 
     if (**ptr == '(')
