@@ -15,13 +15,6 @@
 const int DATA_SIZE = 20;
 
 const int MAX_OP_SIZE = 4;
-/*
-enum CLASS_VARIABLE
-{
-    VR_X = 0,
-    VR_Y = 1,
-    VR_Z = 2,
-};   */
 
 enum POSITION
 {
@@ -52,10 +45,6 @@ static const Node* POISON = NULL;
 
 
 int get_database (struct Node** root, char* file_input);
-
-int construct_data_nodes (struct Node* root, char* text_data, size_t file_size);
-
-int get_element (char* text_data, int* ptr, struct Node* tree);
 
 int check_var (char* buffer);
 

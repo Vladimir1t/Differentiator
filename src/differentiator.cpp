@@ -1,6 +1,6 @@
 #include "..\include\differentiator.h"
 
-static FILE* error_file = fopen ("error_file_diff.txt", "w");
+static FILE* error_file = fopen ("log\\error_file_diff.txt", "w");
 
 static const char file_graph_name[] = "graphviz\\graph_diff.dot";
 
@@ -30,7 +30,7 @@ int run_differentiator (struct Node* tree, FILE* file_output)
     char choice = '\0';
     while (choice != 'n')
     {
-        printf ("do you want to print diff_tree?\n"
+        printf ("Do you want to print diff_tree?\n"
                 "( y, n )\n");
         scanf ("%c", &choice);
         if (choice == 'y')
@@ -118,27 +118,6 @@ double calculator (struct Node* tree, int* is_var_in_subtree)
     }
 
     return tree->data.value;
-}
-
-Class_operation long_op_determinator (char* operation)
-{
-    if (!strcmp (operation, "ln"))
-        return OP_LN;
-
-    else if (!strcmp (operation, "sin"))
-        return OP_SIN;
-
-    else if (!strcmp (operation, "exp"))
-        return OP_EXP;
-
-    else if (!strcmp (operation, "cos"))
-        return OP_COS;
-
-    else if (!strcmp (operation, "sin"))
-        return OP_SIN;
-
-    else if (!strcmp (operation, "tg"))
-        return OP_TG;
 }
 
 struct Node* diff (const struct Node* node, char var)
@@ -251,6 +230,27 @@ struct Node* pow_diff (const struct Node* node, char var)
     }
 }
 
+Class_operation long_op_determinator (char* operation)
+{
+    if (!strcmp (operation, "ln"))
+        return OP_LN;
+
+    else if (!strcmp (operation, "sin"))
+        return OP_SIN;
+
+    else if (!strcmp (operation, "exp"))
+        return OP_EXP;
+
+    else if (!strcmp (operation, "cos"))
+        return OP_COS;
+
+    else if (!strcmp (operation, "sin"))
+        return OP_SIN;
+
+    else if (!strcmp (operation, "tg"))
+        return OP_TG;
+}
+
 struct Node* copy_subtree (const struct Node* node)
 {
     if (node == NULL)
@@ -355,17 +355,3 @@ void remove_neutral_elements (struct Node* tree, int* changed)
         remove_neutral_elements (tree->right, changed);
 }
 
-
-void free_subtree (struct  Node* tree)
-{
-    if (tree->left != NULL)
-        free_subtree (tree->left);
-
-    if (tree->right != NULL)
-        free_subtree (tree->right);
-
-    tree->left = NULL;
-    tree->right = NULL;
-    free (tree);
-    tree = NULL;
-}
