@@ -35,10 +35,6 @@ struct operation
 
 static struct operation array_op[] =
 {
-    {"+",   OP_ADD},
-    {"-",   OP_SUB},
-    {"*",   OP_MUL},
-    {"/",   OP_DIV},
     {"sin", OP_SIN},
     {"cos", OP_COS},
     {"tg",  OP_TG},
@@ -47,22 +43,26 @@ static struct operation array_op[] =
     {"sh",  OP_SH},
     {"ch",  OP_CH},
     {"^",   OP_DEG},
-    {"exp", OP_EXP}
+    {"exp", OP_EXP},
+    {"+",   OP_ADD},
+    {"-",   OP_SUB},
+    {"*",   OP_MUL},
+    {"/",   OP_DIV},
 };
 
 const int OP_NUM = sizeof (array_op) / sizeof (array_op[0]);
 
 struct variable
 {
-    char          name;
-    unsigned char code;
+    char   name;
+    double value;
 };
 
 static struct variable array_vr[] =
 {
-    {'x', 1},
-    {'y', 2},
-    {'z', 3},
+    {'x', 0},
+    {'y', 0},
+    {'z', 0},
 };
 
 const int VAR_NUM = sizeof (array_vr) / sizeof (array_vr[0]);
