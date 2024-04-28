@@ -14,12 +14,12 @@ static void simplifier_conv_of_const (struct Node* tree, int* changed);
 
 static void remove_neutral_elements (struct Node* tree, int* changed);
 
-static void free_subtree (struct Node* tree);
+static int substitute_value (struct Node* node, struct variable* var);
 
-int run_differentiator (struct Node* tree, FILE* file_output)
+struct Node* run_differentiator (struct Node* tree, FILE* file_output)
 {
     if (tree == NULL)
-        return ERROR;
+        return NULL;
 
     simplifier (tree);
 
@@ -28,7 +28,7 @@ int run_differentiator (struct Node* tree, FILE* file_output)
     simplifier (diff_tree);
 
     char choice = '\0';
-    while (choice != 'n')
+    while (choice != 'n' && choice != 'y')
     {
         printf ("Do you want to print diff_tree?\n"
                 "( y, n )\n");
@@ -38,14 +38,13 @@ int run_differentiator (struct Node* tree, FILE* file_output)
             build_graphviz (diff_tree, file_graph_name);
             system ("dot -Tpng graphviz\\graph_diff.dot -o graphviz\\tree_graph_diff.png");
             system ("start graphviz\\tree_graph_diff.png");
-            break;
         }
         clean_buffer ();
     }
 
-    tree_dtor (diff_tree);
+    //printf ("| Result of diff = %lg |\n", count_differential_equation (diff_tree, 'x'));
 
-    return SUCCESS;
+    return diff_tree;
 }
 
 double calculator (struct Node* tree, int* is_var_in_subtree)
@@ -353,5 +352,47 @@ void remove_neutral_elements (struct Node* tree, int* changed)
 
     if (tree->right != NULL)
         remove_neutral_elements (tree->right, changed);
+}
+
+double count_differential_equation (struct Node* root, unsigned char var)
+{
+    int i = 0;
+    int is_var_in_subtree = 0;
+
+    printf ("Write a value of a variable\n");
+    while (i < VAR_NUM)
+    {
+        if (var == array_vr[i].name)
+        {
+            double value = 0;
+            scanf ("%lf", &value);
+            array_vr[i].value = value;
+            break;
+        }
+        i++;
+    }
+    substitute_value (root, &array_vr[i]);
+
+    double result = calculator (root, &is_var_in_subtree);
+
+    return result;
+}
+
+int substitute_value (struct Node* node, struct variable* var)
+{
+    if (node->type == T_VAR /*&& node->data.var == var->name*/)
+    {
+        node->data.var = '\0';
+        node->type = T_NUM;
+        node->data.value = var->value;
+    }
+
+    if (node->left != NULL)
+        substitute_value (node->left, var);
+
+    if (node->right != NULL)
+        substitute_value (node->right, var);
+
+    return 0;
 }
 

@@ -60,7 +60,7 @@ void tree_dtor (struct Node* node);
 
 void clean_buffer ();
 
-int run_differentiator (struct Node* tree, FILE* file_output);
+struct Node* run_differentiator (struct Node* tree, FILE* file_output);
 
 struct Node* create_node (Class_type type, void* data, struct Node* left, struct Node* right);
 
@@ -69,5 +69,7 @@ struct Node* diff (const struct Node* node, char var);
 double calculator (struct Node* tree, int* var);
 
 void simplifier (struct Node* tree);
+
+double count_differential_equation (struct Node* root, unsigned char var);
 
 #endif // DIFFERENTIATOR_H_INCLUDED
