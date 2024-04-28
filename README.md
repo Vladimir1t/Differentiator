@@ -66,8 +66,10 @@ Differentiator is a c program designed to perform symbolic differentiation on ma
 ## Example
 ---
 ![Example Image before diff.](graphviz/tree_graph.png)
+- Before
 ---
 ![Example Image after diff.](graphviz/tree_graph_diff.png)
+- After
 ---
 Suppose you have a file named `input.txt` containing the expression:
 ```
