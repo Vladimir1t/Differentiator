@@ -64,6 +64,11 @@ Differentiator is a c program designed to perform symbolic differentiation on ma
 - Various helper functions for parsing expressions and handling input/output operations.
 
 ## Example
+---
+![Example Image before diff.](graphviz/tree_graph.png)
+---
+![Example Image after diff.](graphviz/tree_graph_diff.png)
+---
 Suppose you have a file named `input.txt` containing the expression:
 ```
 f(x) = x * 2 + x * (cos(x)) ^ ((3) + tg(x / 3))
