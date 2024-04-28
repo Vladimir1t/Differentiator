@@ -21,7 +21,7 @@ Differentiator is a c program designed to perform symbolic differentiation on ma
 - Simplification of expression trees
 - Input from text files containing mathematical expressions
 
-## Files
+## Files Included
 1. **main.cpp**: Entry point of the program. It includes the necessary headers and orchestrates the process of differentiation.
 2. **differentiator.cpp**: Contains the core logic for symbolic differentiation and related operations such as simplification and substitution.
 3. **input_output.cpp**: Handles input/output operations, including reading mathematical expressions from files and generating Graphviz visualizations.
