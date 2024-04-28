@@ -82,19 +82,19 @@
                                         create_node (T_OP, &mul, u, dv));    \
     }
 
-#define DIV_DIFF(node)                                                                      \
-    {                                                                                       \
-        unsigned char mul = '*', sub = '-', div = '/';                                      \
-        struct Node* du = diff (node->left, var);                                           \
-        struct Node* u  = copy_subtree (node->left);                                        \
-        struct Node* dv = diff (node->right, var);                                          \
-        struct Node* v  = copy_subtree (node->right);                                       \
-                                                                                            \
-        struct Node* nominator = create_node (T_OP, &sub, create_node (T_OP, &mul, du, v),  \
-                                                          create_node (T_OP, &mul, u, dv)); \
-        struct Node* denominator = create_node (T_OP, &mul, copy_subtree (u),               \
-                                                            copy_subtree (u));              \
-        return create_node (T_OP, &div, nominator, denominator);                            \
+#define DIV_DIFF(node)                                                                       \
+    {                                                                                        \
+        unsigned char mul = '*', sub = '-', div = '/';                                       \
+        struct Node* du = diff (node->left, var);                                            \
+        struct Node* u  = copy_subtree (node->left);                                         \
+        struct Node* dv = diff (node->right, var);                                           \
+        struct Node* v  = copy_subtree (node->right);                                        \
+                                                                                             \
+        struct Node* nominator = create_node (T_OP, &sub, create_node (T_OP, &mul, du, v),   \
+                                                          create_node (T_OP, &mul, u, dv));  \
+        struct Node* denominator = create_node (T_OP, &mul, copy_subtree (u),                \
+                                                            copy_subtree (u));               \
+        return create_node (T_OP, &div, nominator, denominator);                             \
     }
 
 #define LN_DIFF(node)                                                                                   \
@@ -117,7 +117,6 @@
 
 #define COS_DIFF(node)                                                                                  \
     {                                                                                                   \
-        printf ("diff cos\n");                                                                          \
         unsigned char mul = '*', sub = '-';                                                             \
         double value = 0;                                                                               \
         char* sin = "sin";                                                                              \
